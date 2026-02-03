@@ -152,11 +152,16 @@ def main() -> None:
         ref_audio = args.ref_audio or str(alias["ref_audio"])
         ref_text_value = args.ref_text or alias["ref_text"]
         # Support both file paths and inline text
+        # Treat as file path if it ends with .txt or contains path separators
+        ref_text_str = str(ref_text_value)
+        looks_like_path = ref_text_str.endswith(".txt") or "/" in ref_text_str or "\\" in ref_text_str
         ref_text_path = Path(ref_text_value)
         if ref_text_path.is_file():
             ref_text = ref_text_path.read_text().strip()
+        elif looks_like_path:
+            raise SystemExit(f"Reference text file not found: {ref_text_value}")
         else:
-            ref_text = str(ref_text_value).strip()
+            ref_text = ref_text_str.strip()
         instruct = args.instruct or ""
 
         print(f"Generating speech with Qwen3 (voice: {voice}, language: {args.language})...")
