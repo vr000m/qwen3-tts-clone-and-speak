@@ -89,6 +89,17 @@ Example instructions:
 - "In a professional, formal tone"
 - "Softly, as if telling a bedtime story"
 
+## Analyzing Your Recording
+
+Use the word gap analysis tool to verify your recording quality:
+
+1. Open `webapp/test-word-gap.html` in your browser
+2. Select your recorded audio file
+3. The tool auto-detects which script was used from the filename
+4. Click "Analyze Audio" to test different word gap detection settings
+
+The tool shows how many words were detected at various gap thresholds, helping you verify the recording captured all expected words clearly.
+
 ## Quality Tips
 
 ### Reference Audio Quality

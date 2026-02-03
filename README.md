@@ -74,6 +74,8 @@ uv run python src/tts_record.py clean.txt --engine qwen3-clone
 3. Record yourself reading the script
 4. Download the WAV file and use it as `--ref-audio`
 
+**Word Gap Analysis**: Use `webapp/test-word-gap.html` to analyze recordings and find optimal word detection settings. It auto-detects which script was used from the filename.
+
 ### Option 2: Generate Synthetic Reference
 
 ```bash

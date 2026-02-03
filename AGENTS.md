@@ -52,7 +52,8 @@ For voice cloning, reference audio + transcript are passed to qwen3-clone engine
 
 - `src/tts_record.py` - Main TTS CLI with all three engines
 - `src/generate_reference.py` - Creates synthetic reference audio using Kokoro
-- `webapp/` - Browser-based teleprompter for recording voice samples
+- `webapp/index.html` - Browser-based teleprompter for recording voice samples
+- `webapp/test-word-gap.html` - Word gap analysis tool for verifying recordings
 - `scripts/` - Phoneme-rich text templates (90s-180s) optimized for voice cloning
 - `reference/` - Voice reference audio files and transcripts
 
