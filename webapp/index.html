@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Teleprompter Recorder</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <h1>Teleprompter Recorder</h1>
+        <div class="device-widget">
+          <div class="device-select">
+            <span class="device-icon" aria-hidden="true">🎤</span>
+            <select id="mic" aria-label="Microphone"></select>
+          </div>
+          <div class="device-select">
+            <span class="device-icon" aria-hidden="true">🔊</span>
+            <select id="speaker" aria-label="Speaker"></select>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section id="tab-record" class="tab-panel active">
+          <div class="session-meta">
+            <div class="field">
+              <label for="speaker-name">Speaker name</label>
+              <input
+                id="speaker-name"
+                type="text"
+                placeholder="e.g., Priya Patel"
+                autocomplete="name"
+              />
+            </div>
+            <div class="field">
+              <label for="script-template">Reference script</label>
+              <select id="script-template"></select>
+            </div>
+          </div>
+          <div class="controls">
+            <button id="btn-start" class="primary" aria-label="Start recording">Start Recording</button>
+            <button id="btn-stop" class="danger" disabled aria-label="Stop recording">Stop Recording</button>
+            <button id="btn-clear" class="ghost" aria-label="Clear recording">Clear</button>
+            <div class="status" role="status" aria-live="polite">
+              <span id="status-text">Idle</span>
+              <span id="timer" aria-label="Recording duration">00:00</span>
+            </div>
+          </div>
+
+          <div class="teleprompter">
+            <div class="teleprompter-toolbar">
+              <label for="speed">Scroll speed</label>
+              <input id="speed" type="range" min="0" max="100" value="20" />
+              <button id="btn-scroll" class="ghost" aria-label="Toggle auto scroll">Auto Scroll</button>
+            </div>
+            <textarea id="script" spellcheck="false" aria-label="Script text for teleprompter"></textarea>
+          </div>
+
+          <div class="playback">
+            <h2>Playback</h2>
+            <audio id="player" controls></audio>
+            <div class="playback-actions">
+              <a id="download" class="primary" download="recording.webm" href="#">
+                Download WebM
+              </a>
+              <a id="download-wav" class="ghost" download="recording.wav" href="#">
+                Download WAV
+              </a>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

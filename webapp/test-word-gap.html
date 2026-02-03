@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Word Gap Analysis Test</title>
+  <style>
+    :root {
+      --bg: #0f1b2b;
+      --card: #16263a;
+      --text: #f2f5f7;
+      --muted: #a7b3c3;
+      --accent: #f6c445;
+      --border: #24364d;
+    }
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    h1 { margin: 0 0 8px; }
+    .subtitle { color: var(--muted); margin-bottom: 24px; }
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    button {
+      background: var(--accent);
+      color: #0e1420;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .status {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .results {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      text-align: left;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    th { color: var(--muted); font-weight: 500; }
+    .match { color: #4ade80; }
+    .close { color: var(--accent); }
+    .off { color: #f87171; }
+    .expected {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    .expected h3 { margin: 0 0 8px; }
+    .script-text {
+      font-size: 14px;
+      color: var(--muted);
+      white-space: pre-wrap;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .progress-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.1s;
+    }
+  </style>
+</head>
+<body>
+  <h1>Word Gap Analysis Test</h1>
+  <p class="subtitle">Testing different WORD_GAP_MS values against recorded audio</p>
+
+  <div class="expected">
+    <h3>Expected Script: <select id="script-select" style="background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 4px; padding: 4px 8px; font-size: 14px;">
+      <option value="core-clarity-90s">Core Clarity (90s)</option>
+      <option value="balanced-range-120s">Balanced Range (120s)</option>
+      <option value="extended-coverage-150s">Extended Coverage (150s)</option>
+      <option value="full-spectrum-180s">Full Spectrum (180s)</option>
+    </select></h3>
+    <div class="script-text" id="script-text"></div>
+    <p style="margin: 12px 0 0; color: var(--accent);">Expected word count: <strong id="expected-count">-</strong></p>
+  </div>
+
+  <div class="controls">
+    <label for="audio-file" style="color: var(--muted);">Audio file:</label>
+    <input type="file" id="audio-file" accept="audio/*" style="color: var(--text);">
+    <button id="btn-analyze">Analyze Audio</button>
+    <span class="status" id="status">Ready</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+  <div class="results">
+    <h3>Results by WORD_GAP_MS</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Gap (ms)</th>
+          <th>Words Detected</th>
+          <th>Difference</th>
+          <th>Accuracy</th>
+        </tr>
+      </thead>
+      <tbody id="results-body">
+        <tr><td colspan="4" style="color: var(--muted)">Click "Analyze Audio" to start</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // Script templates (same as app.js)
+    const scriptTemplates = [
+      {
+        id: "core-clarity-90s",
+        label: "Core Clarity (90s)",
+        text:
+          "Today I am recording a clear reference sample for voice cloning. I will speak at a steady pace with natural pauses.\n\n" +
+          "The boy enjoyed measuring how far the blue boat had floated across the calm bay. She chose a good path through the village, then joined her friends near the old church.\n\n" +
+          "The weather was clear, with thin clouds and a light breeze from the south. I packed a warm jacket and took a short walk before heading back home.\n\n" +
+          "I will finish now with even phrasing and a calm, steady tone.",
+      },
+      {
+        id: "balanced-range-120s",
+        label: "Balanced Range (120s)",
+        text:
+          "This is a natural reference script for voice cloning. I will speak clearly at a moderate pace with even breathing throughout.\n\n" +
+          "Last Tuesday, I visited a small cafe near the train station. The atmosphere felt unusual but pleasant, and I enjoyed a quiet hour reading the newspaper. A friend called later to confirm our tour of the old castle.\n\n" +
+          "The green field stretched wide under a pale morning sky. A cool breeze moved through the trees as the first birds began to sing. The air smelled fresh and pure after the night rain.\n\n" +
+          "On the way home, I walked down a straight street past the square. Three children were playing near the fountain, their voices carrying clearly in the still air.\n\n" +
+          "I will end with calm phrasing, steady rhythm, and consistent volume.",
+      },
+      {
+        id: "extended-coverage-150s",
+        label: "Extended Coverage (150s)",
+        text:
+          "I am recording a longer sample for a voice reference. I will use relaxed pacing and smooth transitions so every sound is captured naturally.\n\n" +
+          "The morning began with a cup of strong coffee and a good book. Bob had left a message about grabbing tickets for the evening show, so I made a note to call him back before noon.\n\n" +
+          "Outside, the dog ran across the thick grass while a robin sang from the hedge. The path led through a gate and down toward the beach, where the waves made a soft rushing sound against the shore.\n\n" +
+          "I stopped to watch a ship pass by on the calm sea. The vision of it moving slowly toward the horizon felt peaceful and timeless. A young boy nearby pointed with joy as seabirds circled above.\n\n" +
+          "Later, I shared the photos with my mother and father. They both agreed the trip had been worth the long journey south. We made careful plans to return again next year when the weather turns fair.\n\n" +
+          "I will finish with natural phrasing, clear endings, and a steady rhythm.",
+      },
+      {
+        id: "full-spectrum-180s",
+        label: "Full Spectrum (180s)",
+        text:
+          "Today I am recording a full reference passage for voice cloning. I will speak with calm consistency, natural pauses, and clear articulation.\n\n" +
+          "The journey began on a bright Thursday morning. I caught the eight fifteen train and found a quiet seat near the window. A woman across the aisle was reading a thick novel, while her young son played with a small toy car.\n\n" +
+          "We passed through several villages before reaching the coast. The view was stunning: white cliffs rose sharply from the azure water, and fishing boats rocked gently in the harbour. I took a few photographs to share with friends back home.\n\n" +
+          "At the hotel, the manager greeted me with a warm smile. She showed me to a comfortable room with a view of the square below. The bathroom had fresh towels and a large mirror above the sink.\n\n" +
+          "That evening, I enjoyed a leisurely meal at a restaurant near the theatre. The fish was excellent, and the service was thoughtful without being rushed. Afterward, I walked along the pier as the sun set behind the distant hills.\n\n" +
+          "Would you believe I almost missed my train home? I had to rush through the station, but I made it just in time. What a relief that was!\n\n" +
+          "I will end now with steady sentences and clear phrasing. The experience was wonderful, and I hope to visit again soon. Thank you for listening to this recording.",
+      },
+    ];
+
+    // Test these gap values
+    const GAP_VALUES = [5, 8, 10, 15, 20, 25, 30, 40, 50, 75, 100, 150, 200];
+
+    // Detection thresholds (same as app.js)
+    const SPEAK_THRESHOLD = 10;
+    const SILENCE_THRESHOLD = 6;
+
+    const scriptTextEl = document.getElementById('script-text');
+    const expectedCountEl = document.getElementById('expected-count');
+    const statusEl = document.getElementById('status');
+    const progressEl = document.getElementById('progress');
+    const resultsBody = document.getElementById('results-body');
+    const analyzeBtn = document.getElementById('btn-analyze');
+    const audioFileInput = document.getElementById('audio-file');
+    const scriptSelect = document.getElementById('script-select');
+
+    // Track expected words (updated when script changes)
+    let expectedWords = 0;
+
+    function getSelectedTemplate() {
+      return scriptTemplates.find(t => t.id === scriptSelect.value) || scriptTemplates[0];
+    }
+
+    function updateScriptDisplay() {
+      const template = getSelectedTemplate();
+      scriptTextEl.textContent = template.text;
+      expectedWords = template.text.split(/\s+/).filter(w => w.length > 0).length;
+      expectedCountEl.textContent = expectedWords;
+    }
+
+    // Auto-detect script from filename
+    audioFileInput.addEventListener('change', () => {
+      const filename = audioFileInput.files[0]?.name || '';
+      for (const template of scriptTemplates) {
+        if (filename.includes(template.id)) {
+          scriptSelect.value = template.id;
+          updateScriptDisplay();
+          break;
+        }
+      }
+    });
+
+    // Update display when script dropdown changes
+    scriptSelect.addEventListener('change', updateScriptDisplay);
+
+    // Initialize display
+    updateScriptDisplay();
+
+    function setStatus(text) {
+      statusEl.textContent = text;
+    }
+
+    function setProgress(pct) {
+      progressEl.style.width = pct + '%';
+    }
+
+    function createCell(text, className) {
+      const td = document.createElement('td');
+      td.textContent = text;
+      if (className) td.className = className;
+      return td;
+    }
+
+    async function getAudioBuffer() {
+      const file = audioFileInput.files[0];
+      if (!file) {
+        throw new Error('Please select an audio file first.');
+      }
+      setStatus('Loading: ' + file.name);
+      return await file.arrayBuffer();
+    }
+
+    async function analyzeAudio() {
+      analyzeBtn.disabled = true;
+      resultsBody.textContent = '';
+      const loadingRow = document.createElement('tr');
+      const loadingCell = document.createElement('td');
+      loadingCell.colSpan = 4;
+      loadingCell.textContent = 'Loading audio...';
+      loadingRow.appendChild(loadingCell);
+      resultsBody.appendChild(loadingRow);
+      setProgress(0);
+
+      try {
+        // Load audio file
+        const arrayBuffer = await getAudioBuffer();
+
+        // Decode audio
+        setStatus('Decoding audio...');
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+        // Get audio data (mono - use first channel)
+        const channelData = audioBuffer.getChannelData(0);
+        const sampleRate = audioBuffer.sampleRate;
+        const duration = audioBuffer.duration;
+
+        setStatus('Audio loaded: ' + duration.toFixed(1) + 's, ' + sampleRate + 'Hz');
+
+        // Analyze with each gap value
+        const results = [];
+
+        for (let i = 0; i < GAP_VALUES.length; i++) {
+          const gapMs = GAP_VALUES[i];
+          setStatus('Testing WORD_GAP_MS = ' + gapMs + '...');
+          setProgress((i / GAP_VALUES.length) * 100);
+
+          const wordCount = countWords(channelData, sampleRate, gapMs);
+          results.push({ gapMs, wordCount });
+
+          // Small delay to allow UI updates
+          await new Promise(r => setTimeout(r, 10));
+        }
+
+        // Display results
+        displayResults(results);
+        setProgress(100);
+        setStatus('Analysis complete');
+
+        await audioContext.close();
+      } catch (err) {
+        setStatus('Error: ' + err.message);
+        console.error(err);
+      }
+
+      analyzeBtn.disabled = false;
+    }
+
+    function countWords(channelData, sampleRate, wordGapMs) {
+      // Convert thresholds to work with raw audio data
+      // We'll compute RMS in small windows to simulate the analyser behavior
+      const windowSize = Math.floor(sampleRate * 0.01); // 10ms windows
+      const gapSamples = Math.floor((wordGapMs / 1000) * sampleRate);
+
+      let wordCount = 0;
+      let isSpeaking = false;
+      let silenceSamples = 0;
+
+      // Process in windows
+      for (let i = 0; i < channelData.length; i += windowSize) {
+        // Calculate RMS amplitude for this window
+        let sum = 0;
+        const end = Math.min(i + windowSize, channelData.length);
+        for (let j = i; j < end; j++) {
+          sum += channelData[j] * channelData[j];
+        }
+        const rms = Math.sqrt(sum / (end - i));
+
+        // Convert to 0-255 scale (similar to frequency data)
+        // RMS of speech is typically 0.01-0.3, scale accordingly
+        const amplitude = Math.min(255, rms * 1000);
+
+        if (amplitude > SPEAK_THRESHOLD) {
+          if (!isSpeaking) {
+            isSpeaking = true;
+          }
+          silenceSamples = 0;
+        } else if (amplitude < SILENCE_THRESHOLD) {
+          if (isSpeaking) {
+            silenceSamples += windowSize;
+            if (silenceSamples >= gapSamples) {
+              // Word boundary
+              wordCount++;
+              isSpeaking = false;
+              silenceSamples = 0;
+            }
+          }
+        }
+      }
+
+      // Count final word if still speaking at end
+      if (isSpeaking) {
+        wordCount++;
+      }
+
+      return wordCount;
+    }
+
+    function displayResults(results) {
+      // Clear results
+      while (resultsBody.firstChild) {
+        resultsBody.removeChild(resultsBody.firstChild);
+      }
+
+      // Sort by closest to expected
+      const sorted = [...results].sort((a, b) =>
+        Math.abs(a.wordCount - expectedWords) - Math.abs(b.wordCount - expectedWords)
+      );
+      const bestGap = sorted[0].gapMs;
+
+      for (const { gapMs, wordCount } of results) {
+        const diff = wordCount - expectedWords;
+        const accuracy = Math.max(0, 100 - Math.abs(diff / expectedWords * 100)).toFixed(1);
+
+        let diffClass = 'off';
+        if (Math.abs(diff) === 0) diffClass = 'match';
+        else if (Math.abs(diff) <= 5) diffClass = 'close';
+        else if (Math.abs(diff) <= 15) diffClass = 'close';
+
+        const isBest = gapMs === bestGap;
+
+        const tr = document.createElement('tr');
+
+        const gapCell = createCell(gapMs + (isBest ? ' (best)' : ''));
+        if (isBest) gapCell.style.fontWeight = 'bold';
+        tr.appendChild(gapCell);
+
+        tr.appendChild(createCell(wordCount));
+        tr.appendChild(createCell((diff >= 0 ? '+' : '') + diff, diffClass));
+        tr.appendChild(createCell(accuracy + '%', diffClass));
+
+        resultsBody.appendChild(tr);
+      }
+    }
+
+    analyzeBtn.addEventListener('click', analyzeAudio);
+  </script>
+</body>
+</html>
