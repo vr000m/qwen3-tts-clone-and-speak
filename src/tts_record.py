@@ -112,7 +112,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--ref-text",
         default=None,
-        help="Override reference text path for qwen3-clone.",
+        help="Reference transcript for qwen3-clone: inline text or path to .txt file.",
     )
     parser.add_argument(
         "--instruct",
@@ -150,8 +150,13 @@ def main() -> None:
         # Voice cloning with reference audio/text
         alias = VOICE_ALIASES.get(voice, VOICE_ALIASES["af_heart"])
         ref_audio = args.ref_audio or str(alias["ref_audio"])
-        ref_text_path = args.ref_text or alias["ref_text"]
-        ref_text = Path(ref_text_path).read_text().strip()
+        ref_text_value = args.ref_text or alias["ref_text"]
+        # Support both file paths and inline text
+        ref_text_path = Path(ref_text_value)
+        if ref_text_path.is_file():
+            ref_text = ref_text_path.read_text().strip()
+        else:
+            ref_text = str(ref_text_value).strip()
         instruct = args.instruct or ""
 
         print(f"Generating speech with Qwen3 (voice: {voice}, language: {args.language})...")

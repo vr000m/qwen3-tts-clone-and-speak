@@ -101,7 +101,7 @@ Convert text files to speech.
 | `--voice` | engine default | Voice name |
 | `--speed` | `1.0` | Speed multiplier (kokoro only) |
 | `--ref-audio` | bundled example | Reference audio for voice cloning |
-| `--ref-text` | bundled example | Transcript of reference audio |
+| `--ref-text` | bundled example | Transcript: inline text or path to .txt file |
 | `--instruct` | none | Emotion/style instruction |
 
 ### src/generate_reference.py
