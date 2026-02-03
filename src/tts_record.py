@@ -150,6 +150,8 @@ def main() -> None:
         # Voice cloning with reference audio/text
         alias = VOICE_ALIASES.get(voice, VOICE_ALIASES["af_heart"])
         ref_audio = args.ref_audio or str(alias["ref_audio"])
+        if not Path(ref_audio).is_file():
+            raise SystemExit(f"Reference audio file not found: {ref_audio}")
         ref_text_value = args.ref_text or alias["ref_text"]
         # Support both file paths and inline text
         # Treat as file path if it ends with .txt or contains path separators

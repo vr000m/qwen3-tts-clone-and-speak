@@ -7,7 +7,6 @@ Voice cloning and text-to-speech using [MLX Audio](https://github.com/Blaizzy/ml
 - **3 TTS Engines**: Kokoro (fast), Qwen3-Clone (voice cloning), Qwen3-Custom (styled voices)
 - **Voice Cloning**: Clone any voice from a short audio sample
 - **Teleprompter Webapp**: Browser-based recorder for creating reference audio
-- **Markdown Support**: Preprocess blog posts for TTS (strips code, frontmatter, links)
 - **Phoneme-Rich Scripts**: 4 carefully crafted scripts optimized for voice cloning
 
 ## Requirements
@@ -45,16 +44,6 @@ uv run python src/tts_record.py input.txt --engine qwen3-clone
 # Use your own voice reference
 uv run python src/tts_record.py input.txt --engine qwen3-clone \
   --ref-audio my_voice.wav --ref-text "The transcript of my_voice.wav"
-```
-
-### Markdown to Speech
-
-```bash
-# Preprocess markdown (strips code blocks, YAML frontmatter, HTML, links)
-uv run python src/md2txt.py blog-post.md -o clean.txt
-
-# Then convert to speech
-uv run python src/tts_record.py clean.txt --engine qwen3-clone
 ```
 
 ## Engines
