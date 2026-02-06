@@ -1259,7 +1259,7 @@ wheels = [
 [[package]]
 name = "qwen3-tts-clone-and-speak"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "en-core-web-sm" },
     { name = "espeakng-loader" },
