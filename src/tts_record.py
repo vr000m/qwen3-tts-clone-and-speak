@@ -35,7 +35,7 @@ ENGINE_DEFAULTS = {
         "voice": "af_heart",
     },
     "qwen3-clone": {
-        "model": "mlx-community/Qwen3-TTS-12Hz-0.6B-Base-bf16",
+        "model": "mlx-community/Qwen3-TTS-12Hz-1.7B-Base-bf16",
         "voice": "af_heart",  # Default to Kokoro-generated example
     },
     "qwen3-custom": {
