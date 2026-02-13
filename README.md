@@ -51,7 +51,7 @@ uv run python src/tts_record.py input.txt --engine qwen3-clone \
 | Engine | Model | Speed | Use Case |
 |--------|-------|-------|----------|
 | `kokoro` | Kokoro-82M | Fast | Quick previews, batch processing |
-| `qwen3-clone` | Qwen3-TTS-0.6B | Medium | Clone any voice from reference audio |
+| `qwen3-clone` | Qwen3-TTS-1.7B | Medium | Clone any voice from reference audio |
 | `qwen3-custom` | Qwen3-TTS-1.7B | Slower | Predefined voices with emotion control |
 
 ## Creating Your Own Voice Clone
