@@ -1,6 +1,6 @@
 [project]
 name = "qwen3-tts-clone-and-speak"
-version = "0.1.0"
+version = "0.1.1"
 description = "Voice cloning and text-to-speech using MLX Audio (Qwen3 + Kokoro)"
 readme = "README.md"
 license = "MIT"
@@ -9,7 +9,7 @@ dependencies = [
   "numpy",
   "soundfile",
   "num2words",
-  "mlx-audio[kokoro]>=0.3.0",
+  "mlx-audio>=0.3.0",
   "en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl",
   "spacy>=3.7,<4",
   "typer>=0.21.1",
@@ -28,9 +28,14 @@ build-backend = "hatchling.build"
 [tool.hatch.metadata]
 allow-direct-references = true
 
-[tool.hatch.build.targets.wheel.force-include]
-"src/tts_record.py" = "tts_record.py"
-"src/generate_reference.py" = "generate_reference.py"
+[tool.hatch.build.targets.wheel]
+only-include = [
+  "src/tts_record.py",
+  "src/generate_reference.py",
+]
+
+[tool.hatch.build.targets.wheel.sources]
+"src" = ""
 
 [tool.uv]
 prerelease = "allow"
